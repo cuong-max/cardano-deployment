@@ -34,7 +34,7 @@ Fast Bootstrap từ Mithril Snapshot
 
 ### 3. Demo kết quả thực hiện
 
-3.1 Viết manifest triển khai PostgreSQL DB 
+#### 3.1 Viết manifest triển khai PostgreSQL DB 
 
 File manifest: `cardano-db.yml`
 
@@ -85,7 +85,7 @@ postgres=# \l
 postgres=# 
 ```
 
-3.2 Viết manifest triển khai Cardano Node
+#### 3.2 Viết manifest triển khai Cardano Node
 
 File manifest: `cardano-node.yml`
 
@@ -106,7 +106,7 @@ Kiểm tra log cardano-node
 2025-03-23 23:53:19 [cardano-:cardano.node.ChainDB:Notice:33] [2025-03-23 16:53:19.80 UTC] Chain extended, new tip: e405ebee64f184c4271413f2db516960c9d072773d0a02a22cf9437d00679ca2 at slot 17178624
 ```
 
-3.3 Viết manifest triển khai Cardano DB Sync
+#### 3.3 Viết manifest triển khai Cardano DB Sync
 
 File manifest: `cardano-db-sync.yml`
 
@@ -138,7 +138,7 @@ Kiểm tra log cardano-db-sync đảm bảo kết cardano-db-sync đã detect đ
 2025-03-23 23:18:39 [db-sync-node:Info:85] [2025-03-23 16:18:39.05 UTC] Running Offchain Pool fetch thread
 ```
 
-3.4 Viết manifest triển khai Mithril
+#### 3.4 Viết manifest triển khai Mithril
 
 File manifest triển khai mithril: `bootstrap-mithril.yml`
 File manifest triển khai cardano-node mới: `cardano-node-bootstrap.yml`
@@ -201,7 +201,7 @@ Vấn đề tồn đọng:
 
 ### 4. Các việc cần làm tiếp theo
 
-4.1 Mở rộng kiến trúc cho Database Postgres đảm bảo tính HA 
+#### 4.1 Mở rộng kiến trúc cho Database Postgres đảm bảo tính HA 
 
 **Phương án 1**: Nghiên cứu sử dụng postgres-operator của CNCF
 
@@ -244,7 +244,7 @@ Mô hình kiến trúc
 Nhược điểm
 - Tốn nguồn lực vận hành, quản trị nhiều service
 
-4.2 Triển khai autoscale cho các app stateless
+#### 4.2 Triển khai autoscale cho các app stateless
 
 Triển khai metrics-server thực hiện thu thập dữ liệu từ apiserver phục vụ autoscaler theo chiến lược 
 
