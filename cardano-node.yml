@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: ipc-pvc
+  name: node-ipc-pvc
   namespace: cardano
 spec:
   accessModes:
@@ -88,7 +88,7 @@ spec:
             claimName: node-db-pvc
         - name: ipc
           persistentVolumeClaim:
-            claimName: ipc-pvc
+            claimName: node-ipc-pvc
 
 
 

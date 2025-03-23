@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cardano-node
+  namespace: cardano
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cardano-node
+  template:
+    metadata:
+      labels:
+        app: cardano-node
+    spec:
+      containers:
+        - name: cardano-node
+          image: ghcr.io/intersectmbo/cardano-node:10.1.4
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Starting Cardano Node..."
+              cardano-node run --database-path /data/db --config /config/cardano-config.json
+          ports:
+            - containerPort: 3001
+          volumeMounts:
+            - name: db-storage
+              mountPath: /data/db
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: cardano-db-pvc
+        - name: config
+          configMap:
+            name: cardano-config

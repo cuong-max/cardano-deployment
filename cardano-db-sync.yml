@@ -76,4 +76,4 @@ spec:
           emptyDir: {}
         - name: ipc
           persistentVolumeClaim:
-            claimName: ipc-pvc
+            claimName: node-ipc-pvc

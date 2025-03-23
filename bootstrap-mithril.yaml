@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cardano-db-bootstrap-pvc
+  namespace: cardano
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mithril-client
+  namespace: cardano
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: mithril-client
+          image: mithril-client:v1
+          imagePullPolicy: Never
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              export CARDANO_NETWORK=preprod
+              export AGGREGATOR_ENDPOINT=https://aggregator.release-preprod.api.mithril.network/aggregator
+              export GENESIS_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.com/input-output-hk/mithril/main/mithril-infra/configuration/pre-release-preview/genesis.vkey)
+              export SNAPSHOT_DIGEST=7bcce7edef71d135da9cb6a282beb60b90031b7c8bed22b6537e0ce3f29aa981
+              echo "mithril-client cardano-db snapshot list"
+              mithril-client cardano-db snapshot list
+              echo "mithril-client cardano-db snapshot show ID"
+              mithril-client cardano-db snapshot show $SNAPSHOT_DIGEST
+              echo "mithril-client cardano-db download ID"
+              mithril-client cardano-db download $SNAPSHOT_DIGEST
+          volumeMounts:
+            - name: db-storage
+              mountPath: /data/db
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: cardano-db-bootstrap-pvc
