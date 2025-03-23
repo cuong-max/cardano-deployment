@@ -1,0 +1,79 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cardano-sync
+  namespace: cardano
+spec:
+  selector:
+    app: cardano-sync
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cardano-sync
+  namespace: cardano
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cardano-sync
+  template:
+    metadata:
+      labels:
+        app: cardano-sync
+    spec:
+      containers:
+        - name: cardano-sync
+          image: ghcr.io/intersectmbo/cardano-db-sync:13.6.0.5
+          env:
+            - name: NETWORK
+              value: "preprod"
+            - name: POSTGRES_HOST
+              value: "postgres"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: postgres_db
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: postgres_user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: postgres_password
+            - name: CARDANO_NODE_SOCKET_PATH
+              value: "/node-ipc/node.socket"
+          volumeMounts:
+            - name: db-sync-data
+              mountPath: /var/lib/cexplorer
+            - name: ipc
+              mountPath: /node-ipc
+          livenessProbe:
+            exec:
+              command: ["/bin/sh", "-c", "pg_isready -h postgres -p 5432 -U postgres"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            exec:
+              command: ["/bin/sh", "-c", "pg_isready -h postgres -p 5432 -U postgres"]
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            failureThreshold: 3
+      volumes:
+        - name: db-sync-data
+          emptyDir: {}
+        - name: ipc
+          persistentVolumeClaim:
+            claimName: ipc-pvc
